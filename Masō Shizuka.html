@@ -1,0 +1,807 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>这里是Masō Shizuka呀 ⸝⸝⸝ ╸▵╺⸝⸝⸝</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            cursor: default;
+        }
+
+        :root {
+            --primary: #0a0a0a;
+            --green: #50dc78;
+            --light: #f8f8f8;
+            --gray: #888;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        /* 浅色模式 */
+        [data-theme="light"] {
+            --primary: #ffffff;
+            --light: #111111;
+            --gray: #444444;
+            --card-bg: rgba(0, 0, 0, 0.04);
+            --card-border: rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--primary);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            line-height: 1.6;
+            transition: var(--transition);
+        }
+
+        /* 鼠标跟随光晕 */
+        .mouse-follow {
+            position: fixed;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle, rgba(80, 220, 120, 0.28) 0%, transparent 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: plus-lighter;
+            top: 0;
+            left: 0;
+            transform: translate(-50%, -50%);
+        }
+
+        [data-theme="light"] .mouse-follow {
+            mix-blend-mode: multiply;
+            background: radial-gradient(circle, rgba(80, 220, 120, 0.15) 0%, transparent 70%);
+        }
+
+        /* 粒子背景 */
+        #particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        /* 容器 */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 导航 */
+        nav {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            padding: 24px 0;
+            background: rgba(10, 10, 10, 0.85);
+            backdrop-filter: blur(12px);
+            z-index: 999;
+            transition: var(--transition);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        [data-theme="light"] nav {
+            background: rgba(255, 255, 255, 0.85);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+        }
+
+        .nav-wrapper {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+            font-size: 20px;
+            font-weight: 600;
+            text-decoration: none;
+            letter-spacing: 8px;
+            background: linear-gradient(to right, #2E7D32, #50dc78);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .witch-hat-svg {
+            width: 60px;
+            height: 60px;
+            transform: rotate(-8deg);
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+            margin-top: -18px;
+            margin-right: -12px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 32px;
+        }
+
+        .nav-links a {
+            color: var(--gray);
+            text-decoration: none;
+            font-size: 15px;
+            transition: var(--transition);
+        }
+
+        .nav-links a:hover {
+            color: var(--light);
+        }
+
+        /* ============== 昼夜切换按钮 ============== */
+        .theme-toggle {
+            position: fixed;
+            top: 22px;
+            right: 20px;
+            width: 70px;
+            height: 34px;
+            background: #050505;
+            border-radius: 50px;
+            border: 1px solid rgba(255,255,255,0.1);
+            cursor: pointer;
+            z-index: 9999;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.5);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            transform: translateZ(0);
+        }
+
+        [data-theme="light"] .theme-toggle {
+            background: linear-gradient(180deg, #4facfe 0%, #00f2fe 100%);
+            border: 1px solid rgba(255,255,255,0.4);
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .toggle-slider {
+            position: absolute;
+            top: 3px;
+            left: 39px;
+            width: 28px;
+            height: 28px;
+            background: #f0f0f0;
+            border-radius: 50%;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        [data-theme="light"] .toggle-slider {
+            left: 3px;
+            background: #FFE66D;
+            box-shadow: 0 0 20px rgba(255,230,109,0.8);
+        }
+
+        /* 太阳 */
+        .sun-body {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #FFE66D;
+            border-radius: 50%;
+            box-shadow: 0 0 12px #FFE66D, 0 0 20px rgba(255, 230, 109, 0.4);
+            opacity: 0;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 3;
+        }
+        [data-theme="light"] .sun-body { opacity: 1; }
+
+        /* 太阳光线 */
+        .sun-rays {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: all 0.4s ease;
+            animation: sunRotate 12s linear infinite;
+            z-index: 2;
+        }
+        [data-theme="light"] .sun-rays { opacity: 1; }
+
+        .sun-rays span {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: #FFE66D;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        .sun-rays span::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 4px;
+            height: 32px;
+            background: linear-gradient(to bottom, rgba(255, 230, 109, 0), #FFE66D 50%, rgba(255, 230, 109, 0));
+            border-radius: 50%;
+            filter: blur(2px);
+            opacity: 0.7;
+        }
+
+        .sun-rays span:nth-child(2) { transform: rotate(45deg); }
+        .sun-rays span:nth-child(3) { transform: rotate(90deg); }
+        .sun-rays span:nth-child(4) { transform: rotate(135deg); }
+        .sun-rays span:nth-child(5) { transform: rotate(22.5deg); opacity: 0.9; }
+        .sun-rays span:nth-child(5)::before { height: 26px; }
+        .sun-rays span:nth-child(6) { transform: rotate(67.5deg); opacity: 0.9; }
+        .sun-rays span:nth-child(6)::before { height: 26px; }
+        .sun-rays span:nth-child(7) { transform: rotate(112.5deg); opacity: 0.9; }
+        .sun-rays span:nth-child(7)::before { height: 26px; }
+        .sun-rays span:nth-child(8) { transform: rotate(157.5deg); opacity: 0.9; }
+        .sun-rays span:nth-child(8)::before { height: 26px; }
+
+        @keyframes sunRotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* 月牙 */
+        .moon {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #f0f0f0;
+            border-radius: 50%;
+            opacity: 1;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+            z-index: 1;
+        }
+
+        .moon::after {
+            content: '';
+            position: absolute;
+            top: -2.5px;
+            right: -4.5px;
+            width: 100%;
+            height: 100%;
+            background: #050505;
+            border-radius: 50%;
+            transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        [data-theme="light"] .moon { opacity: 0; }
+
+        /* 星星 */
+        .star {
+            position: absolute;
+            background: white;
+            border-radius: 50%;
+            opacity: 1;
+            transition: all 0.5s ease;
+            z-index: 1;
+        }
+        [data-theme="light"] .star { opacity: 0; transform: translateY(10px); }
+        .star1{width:2px;height:2px;top:8px;left:10px;animation: twinkle 2s infinite}
+        .star2{width:1px;height:1px;top:22px;left:18px;animation: twinkle 1.5s infinite .3s}
+        .star3{width:2px;height:2px;top:12px;left:30px;animation: twinkle 2.5s infinite .6s}
+        .star4{width:1px;height:1px;top:25px;left:35px;animation: twinkle 1.8s infinite .9s}
+        .star5{width:2px;height:2px;top:15px;left:45px;animation: twinkle 2.2s infinite 1.2s}
+        .star6{width:1px;height:1px;top:10px;left:50px;animation: twinkle 2s infinite .5s}
+        .star7{width:2px;height:2px;top:20px;left:55px;animation: twinkle 2.3s infinite .2s}
+        .star8{width:1px;height:1px;top:5px;left:25px;animation: twinkle 1.9s infinite .8s}
+
+        /* 云朵 */
+        .cloud {
+            position: absolute;
+            color: white;
+            opacity: 0;
+            transition: all 0.5s ease;
+            filter: drop-shadow(0 2px 3px rgba(255,255,255,0.3));
+        }
+        [data-theme="light"] .cloud { opacity: 0.9; }
+        .cloud1 { font-size: 14px; top: 6px; left: 35px; animation: float 3s ease-in-out infinite; }
+        .cloud2 { font-size: 10px; top: 18px; left: 48px; animation: float 3.5s ease-in-out infinite .5s; }
+        .cloud3 { font-size: 8px; top: 10px; left: 55px; animation: float 4s ease-in-out infinite 1s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-3px); }
+        }
+
+        /* 状态微调（移除旧冲突样式） */
+        @keyframes spin {
+            from{transform:rotate(0deg)}
+            to{transform:rotate(360deg)}
+        }
+        @keyframes twinkle {
+            0%,100%{opacity:0.2}
+            50%{opacity:1}
+        }
+        /* ========================================== */
+
+        /* 英雄区域 */
+        .hero {
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            padding-top: 80px;
+            opacity: 0;
+            transform: translateY(30px);
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-content {
+            max-width: 700px;
+        }
+
+        .hero h1 {
+            font-size: 56px;
+            font-weight: 500;
+            line-height: 1.1;
+            margin-bottom: 24px;
+            letter-spacing: -0.02em;
+            color: var(--light);
+        }
+
+        .hero p {
+            font-size: 18px;
+            color: var(--gray);
+            margin-bottom: 40px;
+            max-width: 520px;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 28px;
+            background-color: var(--green);
+            color: #ffffff;
+            border-radius: 50px;
+            font-weight: 500;
+            transition: var(--transition);
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(80, 220, 120, 0.3);
+        }
+
+        /* 高级磁块卡片 */
+        .cards-section {
+            padding: 60px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 35px 30px;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            cursor: default;
+        }
+
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            border-color: rgba(80, 220, 120, 0.2);
+            background: rgba(80, 220, 120, 0.05);
+            box-shadow: 0 20px 40px rgba(80, 220, 120, 0.1);
+        }
+
+        .card-icon {
+            font-size: 28px;
+            color: var(--green);
+            margin-bottom: 20px;
+        }
+
+        .card h3 {
+            font-size: 20px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--light);
+        }
+
+        .card p {
+            color: var(--gray);
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        /* 动态标签页 */
+        .tabs-section {
+            padding: 80px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .tab-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            padding: 14px 32px;
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 50px;
+            color: var(--gray);
+            font-size: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .tab-btn.active {
+            background: rgba(80, 220, 120, 0.12);
+            border-color: rgba(80, 220, 120, 0.3);
+            color: var(--green);
+        }
+
+        .tab-btn:hover {
+            color: var(--light);
+            border-color: rgba(255,255,255,0.15);
+        }
+
+        .tab-content {
+            display: none;
+            animation: tabFade 0.4s ease forwards;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .tab-box {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 20px;
+            padding: 40px;
+            text-align: center;
+        }
+
+        .tab-box h2 {
+            color: var(--light);
+            font-size: 28px;
+            margin-bottom: 16px;
+        }
+
+        .tab-box p {
+            color: var(--gray);
+            font-size: 16px;
+            line-height: 1.7;
+        }
+
+        @keyframes tabFade {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 36px;
+            }
+            .nav-links {
+                gap: 16px;
+            }
+            .mouse-follow {
+                display: none;
+            }
+            .cards-grid,
+            .tab-buttons {
+                grid-template-columns: 1fr;
+            }
+            .tab-box {
+                padding: 30px 20px;
+            }
+            .theme-toggle {
+                transform: scale(0.85);
+                top: 24px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 昼夜切换按钮 -->
+    <div class="theme-toggle" id="themeToggle">
+        <div class="star star1"></div>
+        <div class="star star2"></div>
+        <div class="star star3"></div>
+        <div class="star star4"></div>
+        <div class="star star5"></div>
+        <div class="star star6"></div>
+        <div class="star star7"></div>
+        <div class="star star8"></div>
+        <i class="fa fa-cloud cloud cloud1"></i>
+        <i class="fa fa-cloud cloud cloud2"></i>
+        <i class="fa fa-cloud cloud cloud3"></i>
+        <div class="toggle-slider">
+            <div class="sun-body"></div>
+            <div class="sun-rays">
+                <span></span><span></span><span></span><span></span>
+                <span></span><span></span><span></span><span></span>
+            </div>
+            <div class="moon"></div>
+        </div>
+    </div>
+
+    <!-- 鼠标光晕 + 粒子效果 -->
+    <div class="mouse-follow"></div>
+    <div id="particles"></div>
+
+    <!-- 导航 -->
+    <nav id="navbar">
+        <div class="container nav-wrapper">
+            <a href="#" class="logo">
+                <svg class="witch-hat-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                    <!-- 巫师帽主体：更加尖锐的造型，带自然弯折 -->
+                    <path d="M25,80 
+                             C25,50 40,20 50,8 
+                             C60,-8 85,-5 78,20 
+                             C75,40 60,45 50,45 
+                             C40,45 25,65 25,80 Z" fill="#2c3e50" />
+                    <!-- 宽大且略带起伏的帽檐 -->
+                    <path d="M5,82 C5,70 95,70 95,82 C95,94 5,94 5,82 Z" fill="#2c3e50" />
+                    <!-- 亮紫红色装饰带：色彩还原图片 -->
+                    <path d="M24,76 C45,72 75,72 76,76 L78,80 C50,76 22,80 22,80 Z" fill="#D81B60" />
+                    <!-- 绿宝石装饰扣 -->
+                    <rect x="44" y="71" width="12" height="12" rx="1" fill="#2E7D32" stroke="#FFD54F" stroke-width="2" />
+                    <!-- 宝石高光 -->
+                    <rect x="46" y="73" width="3" height="3" rx="0.5" fill="white" fill-opacity="0.4" />
+                </svg>
+                志津香
+            </a>
+            <div class="nav-links">
+                <a href="#home">首页</a>
+                <a href="#features">功能</a>
+                <a href="#tabs">内容</a>
+                <a href="#contact">联系</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主页 -->
+    <section class="hero" id="home">
+        <div class="container">
+            <div class="hero-content">
+                <h1>设计极简<br>体验高级</h1>
+                <p>专注于简洁、优雅、现代化的界面设计，用最少的元素表达最完整的内容。</p>
+                <button class="btn" id="actionBtn">
+                    <i class="fa fa-arrow-right"></i> 开始探索
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- 磁块 -->
+    <section class="cards-section" id="features">
+        <div class="container">
+            <div class="cards-grid">
+                <div class="card">
+                    <div class="card-icon"><i class="fa fa-bolt"></i></div>
+                    <h3>极速性能</h3>
+                    <p>轻量化设计，流畅运行不卡顿，适配所有设备与场景</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fa fa-paint-brush"></i></div>
+                    <h3>极简美学</h3>
+                    <p>高级视觉风格，干净通透，每一处细节都精心打磨</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fa fa-mobile"></i></div>
+                    <h3>响应式设计适配</h3>
+                    <p>完美支持电脑、平板、手机，自动适配各种屏幕尺寸</p>
+                </div>
+                <div class="card">
+                    <div class="card-icon"><i class="fa fa-magic"></i></div>
+                    <h3>交互体验</h3>
+                    <p>流畅动画与鼠标跟随，打造沉浸式高端操作体验</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 标签页 -->
+    <section class="tabs-section" id="tabs">
+        <div class="container">
+            <div class="tab-buttons">
+                <button class="tab-btn active" data-tab="1">项目介绍</button>
+                <button class="tab-btn" data-tab="2">技术优势</button>
+                <button class="tab-btn" data-tab="3">使用说明</button>
+            </div>
+            <div class="tab-contents">
+                <div class="tab-content active" id="tab1">
+                    <div class="tab-box">
+                        <h2>项目介绍</h2>
+                        <p>这是一款极简高级风的现代化展示页面，采用原生 HTML + CSS + JS 开发，包含粒子背景、鼠标光晕、磨砂磁块与动态标签页，整体风格统一、高端、流畅</p>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab2">
+                    <div class="tab-box">
+                        <h2>技术优势</h2>
+                        <p>原生代码无框架、轻量高性能、全设备响应式、磨砂玻璃质感、丝滑动画过渡、自定义鼠标效果、交互式粒子背景</p>
+                    </div>
+                </div>
+                <div class="tab-content" id="tab3">
+                    <div class="tab-box">
+                        <h2>使用说明</h2>
+                        <p>直接复制代码即可使用，可自由修改文字、颜色、图标、内容，无需安装任何依赖，打开浏览器即可运行</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 粒子效果 -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    
+    <script>
+        // 鼠标跟随效果（自定义光标）
+        const mouseFollow = document.querySelector('.mouse-follow');
+        let mouseX = 0, mouseY = 0;
+        let followerX = 0, followerY = 0;
+
+        window.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+        });
+
+        function animateFollower() {
+            const speed = 0.2; // 跟随速度，值越小越灵敏（0-1之间）
+            followerX += (mouseX - followerX) * speed;
+            followerY += (mouseY - followerY) * speed;
+            mouseFollow.style.left = followerX + "px";
+            mouseFollow.style.top = followerY + "px";
+            requestAnimationFrame(animateFollower);
+        }
+        animateFollower();
+
+        // 粒子效果
+        const updateParticles = (theme) => {
+            const color = theme === 'light' ? "#2d2d2d" : "#50dc78";
+            const opacity = theme === 'light' ? 0.15 : 0.3;
+            
+            particlesJS("particles", {
+                "particles": {
+                    "number": { "value": 80, "density": { "enable": true } },
+                    "color": { "value": color },
+                    "shape": { "type": "circle" },
+                    "opacity": { "value": opacity },
+                    "size": { "value": 3 },
+                    "line_linked": {
+                        "enable": true,
+                        "distance": 150,
+                        "color": color,
+                        "opacity": theme === 'light' ? 0.1 : 0.2,
+                        "width": 1
+                    },
+                    "move": {
+                        "enable": true,
+                        "speed": 1,
+                        "random": true,
+                        "straight": false,
+                        "out_mode": "out"
+                    }
+                },
+                "interactivity": {
+                    "detect_on": "canvas",
+                    "events": {
+                        "onhover": { "enable": true, "mode": "grab" },
+                        "onclick": { "enable": true, "mode": "push" }
+                    }
+                },
+                "retina_detect": true
+            });
+        };
+
+        // 初始化粒子
+        updateParticles(localStorage.getItem('theme') || 'dark');
+
+        // 加载动画
+        window.addEventListener('DOMContentLoaded', () => {
+            const hero = document.querySelector('.hero');
+            setTimeout(() => {
+                hero.style.transition = 'all 0.8s ease';
+                hero.style.opacity = '1';
+                hero.style.transform = 'translateY(0)';
+            }, 200);
+        });
+
+        // 导航滚动
+        window.addEventListener('scroll', () => {
+            const nav = document.getElementById('navbar');
+            if (window.scrollY > 50) {
+                nav.style.padding = '16px 0';
+                nav.style.boxShadow = '0 2px 20px rgba(0,0,0,0.2)';
+            } else {
+                nav.style.padding = '24px 0';
+                nav.style.boxShadow = 'none';
+            }
+        });
+
+        // 标签页
+        const tabBtns = document.querySelectorAll('.tab-btn');
+        const tabContents = document.querySelectorAll('.tab-content');
+        tabBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                tabBtns.forEach(b => b.classList.remove('active'));
+                tabContents.forEach(c => c.classList.remove('active'));
+                btn.classList.add('active');
+                const tabId = btn.getAttribute('data-tab');
+                document.getElementById(`tab${tabId}`).classList.add('active');
+            });
+        });
+
+        // ============== 昼夜切换 ==============
+        const themeToggle = document.getElementById('themeToggle');
+        
+        // 检查本地存储
+        const savedTheme = localStorage.getItem('theme') || 'dark'; // 默认黑夜
+        if (savedTheme === 'light') {
+            document.body.setAttribute('data-theme', 'light');
+        } else {
+            document.body.removeAttribute('data-theme');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            const current = document.body.getAttribute('data-theme');
+            if (current === 'light') {
+                document.body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'dark');
+                updateParticles('dark');
+            } else {
+                document.body.setAttribute('data-theme', 'light');
+                localStorage.setItem('theme', 'light');
+                updateParticles('light');
+            }
+        });
+
+        // 动态标题
+        window.addEventListener('visibilitychange', () => {
+            if (document.hidden) {
+                document.title = '你何时回来喵｡ﾟヽ(ﾟ´Д`)ﾉﾟ｡';
+            } else {
+                document.title = '这里是Masō Shizuka呀 ⸝⸝⸝ ╸▵╺⸝⸝⸝';
+            }
+        });
+
+        // 按钮点击
+        const btn = document.getElementById('actionBtn');
+        btn.addEventListener('click', () => {
+            alert('欢迎使用极简高级模板！');
+        });
+    </script>
+</body>
+</html>
